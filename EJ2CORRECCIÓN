@@ -1,0 +1,48 @@
+clc,clear all;
+
+%-----Cargamos los datos del problema------
+load datosProb2.mat
+
+% Parámetros dados en el problema
+v = 3e8;  % Velocidad de propagación de la señal (m/s)
+Fs = 1e8;  % Frecuencia de muestreo (Hz)
+Ts = 1 / Fs;  % Período de muestreo (s)
+alfa = 0.6;  % Coeficiente de atenuación
+delta_T = 16;  % Intervalo de tiempo entre T1 y T2 (s)
+
+% Obtener los desplazamientos (lags) (x1 y x2 tienen la misma logitud y por eso podemos suponer los lags asi)
+l = -length(x1)+1:length(x1)-1;
+
+% Calculo la correlación cruzada entre las señales
+ry1x1 = xcorr(y1,x1);
+ry2x2 = xcorr(y2,x2);
+
+%Calculo autocorrelaciones (Nota: Pensandolo en frio esto es innecesario pero lo corrijo de todos modos)
+rx1x1 = xcorr(x1,x1);
+rx2x2 = xcorr(x2,x2);
+% Encontrar los índices de los máximos de las correlaciones
+[~, D1] = max(ry1x1); %NOTA: en matlab ~ se utiliza para despreciar la salida o retorno de una funcion
+[~, D2] = max(ry2x2);  
+
+%Graficas
+plot(l,ry1x1,'r');
+hold on
+plot(l,ry2x2,'b');
+ylabel('rxy')
+xlabel('l')
+hold off
+
+%Cálculos
+
+% Calcular las distancias
+d1 = (v * D1 * Ts) / 2;  % Distancia al instante T1
+d2 = (v * D2 * Ts) / 2;  % Distancia al instante T2
+
+% Calcular la velocidad del vehículo
+velocidad = (d2 - d1) / delta_T;  % Velocidad del vehículo
+
+% Mostrar los resultados
+disp(['Distancia en T1: ', num2str(d1), ' m']);
+disp(['Distancia en T2: ', num2str(d2), ' m']);
+disp(['Velocidad del vehículo: ', num2str(velocidad), ' m/s']);
+
